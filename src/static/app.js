@@ -83,4 +83,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize app
   fetchActivities();
+
+  document.querySelectorAll('.activity-card').forEach(card => {
+    const list = card.querySelector('.participants-list');
+    if (!list) return;
+
+    const raw = card.dataset.participants;
+    let participants = [];
+
+    try {
+      if (raw) participants = JSON.parse(raw);
+    } catch (e) {
+      // fallback: CSV or plain string
+      participants = raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    }
+
+    if (!participants || participants.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'participant-empty';
+      empty.textContent = 'No hay participantes inscritos todavía.';
+      list.parentNode.replaceChild(empty, list);
+      return;
+    }
+
+    participants.forEach(name => {
+      const li = document.createElement('li');
+      li.className = 'participant-item';
+
+      const avatar = document.createElement('span');
+      avatar.className = 'participant-avatar';
+      avatar.textContent = name
+        .split(' ')
+        .map(n => n[0] || '')
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
+      const span = document.createElement('span');
+      span.textContent = name;
+
+      li.appendChild(avatar);
+      li.appendChild(span);
+      list.appendChild(li);
+    });
+  });
 });
