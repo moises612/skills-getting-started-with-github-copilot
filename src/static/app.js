@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Refresca la lista de actividades y participantes
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
@@ -109,6 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
     participants.forEach(name => {
       const li = document.createElement('li');
       li.className = 'participant-item';
+      li.style.display = 'flex';
+      li.style.alignItems = 'center';
+      li.style.marginBottom = '4px';
 
       const avatar = document.createElement('span');
       avatar.className = 'participant-avatar';
@@ -121,9 +126,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const span = document.createElement('span');
       span.textContent = name;
+      span.style.flex = '1';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.innerHTML = '🗑️';
+      deleteBtn.title = 'Eliminar participante';
+      deleteBtn.style.marginLeft = '8px';
+      deleteBtn.style.background = 'none';
+      deleteBtn.style.border = 'none';
+      deleteBtn.style.cursor = 'pointer';
+      deleteBtn.style.fontSize = '1em';
+      deleteBtn.onclick = function() {
+        participants.splice(participants.indexOf(name), 1);
+        // Limpiar y volver a renderizar la lista
+        list.innerHTML = '';
+        participants.forEach(n => {
+          // Recursivo: renderiza de nuevo cada participante
+          const li2 = document.createElement('li');
+          li2.className = 'participant-item';
+          li2.style.display = 'flex';
+          li2.style.alignItems = 'center';
+          li2.style.marginBottom = '4px';
+          const avatar2 = document.createElement('span');
+          avatar2.className = 'participant-avatar';
+          avatar2.textContent = n.split(' ').map(nn => nn[0] || '').slice(0, 2).join('').toUpperCase();
+          const span2 = document.createElement('span');
+          span2.textContent = n;
+          span2.style.flex = '1';
+          const deleteBtn2 = document.createElement('button');
+          deleteBtn2.innerHTML = '🗑️';
+          deleteBtn2.title = 'Eliminar participante';
+          deleteBtn2.style.marginLeft = '8px';
+          deleteBtn2.style.background = 'none';
+          deleteBtn2.style.border = 'none';
+          deleteBtn2.style.cursor = 'pointer';
+          deleteBtn2.style.fontSize = '1em';
+          deleteBtn2.onclick = function() {
+            participants.splice(participants.indexOf(n), 1);
+            list.innerHTML = '';
+            participants.forEach(renderParticipant);
+          };
+          li2.appendChild(avatar2);
+          li2.appendChild(span2);
+          li2.appendChild(deleteBtn2);
+          list.appendChild(li2);
+        });
+      };
 
       li.appendChild(avatar);
       li.appendChild(span);
+      li.appendChild(deleteBtn);
       list.appendChild(li);
     });
   });
